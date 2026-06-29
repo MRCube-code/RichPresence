@@ -1,4 +1,4 @@
-name: Build Revenge Plugins
+name: Build RichPresence Plugin
 
 on:
   workflow_dispatch:
@@ -12,23 +12,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
+          node-version: "22"
+
+      - name: Show repository contents
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type f
+
+      - name: Check for package.json
+        run: |
+          if [ ! -f package.json ]; then
+            echo "ERROR: package.json not found in repository root."
+            exit 1
+          fi
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build
+      - name: Build plugin
         run: npm run build
 
-      - name: Upload build
+      - name: Upload build output
         uses: actions/upload-artifact@v4
         with:
-          name: revenge-build
-          path: .
+          name: RichPresence-Build
+          path: |
+            dist/**
+            build/**
+            plugins/**
